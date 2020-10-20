@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 def to_csv(df, path):
     # Prepend dtypes to the top of df
     df2 = df.copy()
@@ -22,6 +21,6 @@ def read_csv(path):
     # Read the rest of the lines with the types from above
     dataframe = pd.read_csv(
         path, dtype=dtypes, parse_dates=parse_dates, skiprows=[1])
-    dataframe.set_index('Tid(norsk normaltid)', inplace=True)
+    dataframe.set_index('date', inplace=True)
 
     return dataframe
