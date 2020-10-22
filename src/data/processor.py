@@ -57,7 +57,7 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # Convert data types to float64
     columns = list(df)
-    for x in range(1, len(columns)):
+    for x in range(0, len(columns)):
         df[columns[x]] = pd.to_numeric(df[columns[x]], errors='coerce')
 
     return df
