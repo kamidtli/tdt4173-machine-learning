@@ -1,13 +1,16 @@
-from keras import Sequential
-from keras.layers import Dropout, TimeDistributed, Dense, Activation
+from tensorflow.keras.layers import Dropout, TimeDistributed, Dense, Activation, Input
+from tensorflow.keras import Model
 
 
-def fully_connected_model(hidden_layers, use_dropout=False):
-    model = Sequential()
+def fully_connected_model(hidden_layers, shape, optimizer, loss, use_dropout=False):
+    inputs = x = Input(shape=(shape.shape[1], shape.shape[2]))
+    print(hidden_layers)
     for i in hidden_layers:
-        model.add(Dense(i))
+        x = Dense(i)(x)
     if use_dropout:
-        model.add(Dropout(0.5))
-    model.add(TimeDistributed(Dense(10)))
-    model.add(Activation('softmax'))
+        inputs = Dropout(0.5)(x)
+    outputs = Dense(1)(x)
+    model = Model(inputs, outputs)
+    model.compile(optimizer=optimizer, loss=loss)
     return model
+

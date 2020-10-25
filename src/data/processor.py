@@ -1,7 +1,7 @@
-import sys
+from copy import deepcopy
+
 import pandas as pd
-from os.path import exists
-from utils.csv import to_csv
+import numpy as np
 
 
 def fetch_raw_data() -> pd.DataFrame:
@@ -57,7 +57,28 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # Convert data types to float64
     columns = list(df)
-    for x in range(1, len(columns)):
+    for x in range(len(columns)):
         df[columns[x]] = pd.to_numeric(df[columns[x]], errors='coerce')
 
     return df
+
+def clean_string(input):
+    string = deepcopy(input)
+    string = string.lower()
+    string = string.replace(" ", "_")
+    return string
+
+def preprocess_data(df: pd.DataFrame, N: int):
+    dataset = pd.DataFrame()
+    for i in range(N, len(df)):
+        print(i)
+        dataset.append({'x': df.iloc[i-N:i-1], 'y': df.iloc[i]})
+    return dataset
+
+def normalize(data, train_split):
+    data_mean = data[:train_split].mean(axis=0)
+    data_std = data[:train_split].std(axis=0)
+    return (data - data_mean) / data_std
+
+
+

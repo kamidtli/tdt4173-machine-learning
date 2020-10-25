@@ -7,7 +7,7 @@ from pathlib import Path
 from csv_utils import read_csv
 
 titles = [
-    #"Air Pressure",
+    "Air Pressure",
     "Water vapor pressure",
     "Relative air humidity",
     "Specific air humidity",
@@ -18,11 +18,7 @@ titles = [
     "Cloudy weather",
 ]
 
-def clean_string(input):
-    string = deepcopy(input)
-    string = string.lower()
-    string = string.replace(" ", "_")
-    return string
+
 
 
 date_time_key = "date"
@@ -37,5 +33,17 @@ def show_raw_visualization(data):
         fig = x.plot().get_figure()
         fig.savefig("../../plots/data/{}.png".format(title))
 
+def show_heatmap(data):
+    plt.matshow(data.corr())
+    plt.xticks(range(data.shape[1]), data.columns, fontsize=14, rotation=90)
+    plt.gca().xaxis.tick_bottom()
+    plt.yticks(range(data.shape[1]), data.columns, fontsize=14)
 
-show_raw_visualization(df)
+    cb = plt.colorbar()
+    cb.ax.tick_params(labelsize=14)
+    plt.title("Feature Correlation Heatmap", fontsize=14)
+    plt.savefig("../../plots/{}.png".format("heatmap_correlation"))
+
+#show_heatmap(df)
+
+#show_raw_visualization(df)
