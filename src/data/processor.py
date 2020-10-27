@@ -93,12 +93,10 @@ def load_data(df, selected, config, normalize_values=True):
     train_data = features.iloc[0: train_split - 1]
     val_data = features.iloc[train_split:]
 
-    x_train = train_data.iloc[:, config.selected_features].values
+    x_train = train_data.loc[:, selected].values
     y_train = features[['downfall']][1:train_split]  # 7 is the index of downfall
 
-    print("y_train: ", y_train)
-
-    x_val = val_data.iloc[:, config.selected_features].values
+    x_val = val_data.loc[:, selected].values
     y_val = features[['downfall']][train_split:]
 
     dataset_train = tf.keras.preprocessing.timeseries_dataset_from_array(

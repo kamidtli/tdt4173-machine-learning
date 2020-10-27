@@ -26,8 +26,9 @@ def main():
     else:
         df = read_csv('../data/processed/processed_data.csv')
 
-    df = df.fillna(-1)
-    print(df.air_pressure)
+    df = df.fillna(0)
+    index_downfall = df.columns.get_loc("downfall")
+    print("index of downfall: ", index_downfall)
     selected = [config.features[i] for i in config.selected_features]
     print(
         "The selected features are:",
@@ -47,7 +48,8 @@ def main():
         hidden_layers=config.hidden_layers,
         shape=inputs,
         optimizer=config.optimizer,
-        loss=config.loss
+        loss=config.loss,
+        use_dropout=True
     )
     model, history = train_model(
         save_dir="../models",
@@ -62,8 +64,10 @@ def main():
     print("test loss, test acc:", results) 
     visualize_loss(history, "Training and Validation loss")
     for x, y in dataset_val.take(5):
+        print(x[0])
+        print(x[0][:,index_downfall].numpy())
         show_plot(
-            [x[0][:, 7].numpy(), y[0].numpy(), model.predict(x)[0]],
+            [x[0][:, index_downfall].numpy(), y[0].numpy(), model.predict(x)[0]],
             title="Single Step Prediction"
         )
 
