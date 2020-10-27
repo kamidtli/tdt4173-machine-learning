@@ -1,14 +1,21 @@
 import pandas as pd
 import tensorflow as tf
+import numpy as np
+import kerastuner as kt
 
-from data.processor import process_data, fetch_raw_data, preprocess_data, normalize, clean_string
+from data.processor import process_data, fetch_raw_data, preprocess_data, normalize, clean_string, load_data
 from utils.csv_utils import to_csv, read_csv
 import config
-from evaluate import model_loss
+from evaluate import model_loss, visualize_loss, show_plot
 from train import train_model
 from models.gru import gru_model
+from models.lstm import lstm_model
 from models.fully_connected import fully_connected_model
 
+# Set seed for reproducibility
+randomState = 14
+np.random.seed(randomState)
+tf.random.set_seed(randomState)
 
 def main():
     process_data_bool = True
@@ -20,51 +27,29 @@ def main():
         df = read_csv('../data/processed/processed_data.csv')
 
     df = df.fillna(-1)
+    print(df.air_pressure)
     selected = [config.features[i] for i in config.selected_features]
     print(
         "The selected features are:",
         ", ".join(selected),
     )
-    selected = [clean_string(i) for i in selected]
-    train_split = int(config.train_split * int(df.shape[0]))
-    features = df[selected]
-    features = normalize(features.values, train_split)
-    features = pd.DataFrame(features)
 
-    train_data = features.loc[0: train_split - 1]
-    val_data = features.loc[train_split:]
+    dataset_train, dataset_val = load_data(df, selected, config, normalize_values=False)
 
-    x_train = train_data[config.selected_features].values
-    y_train = features.loc[1:train_split][[7]]  # 7 is the index of downfall
-
-    x_val = val_data[config.selected_features].values
-    y_val = features.loc[train_split:][[7]]
-
-    dataset_train = tf.keras.preprocessing.timeseries_dataset_from_array(
-        x_train,
-        y_train,
-        sequence_length=config.sequence_length,
-        batch_size=config.batch_size,
-    )
-    dataset_val = tf.keras.preprocessing.timeseries_dataset_from_array(
-        x_val,
-        y_val,
-        sequence_length=config.sequence_length,
-        batch_size=config.batch_size,
-    )
     for batch in dataset_train.take(1):
         inputs, targets = batch
 
     print("Input shape:", inputs.numpy().shape)
     print("Target shape:", targets.numpy().shape)
+    print("Input: ", inputs.numpy()[0].shape)
 
-    model = fully_connected_model(
+    model = gru_model(
         hidden_layers=config.hidden_layers,
         shape=inputs,
         optimizer=config.optimizer,
         loss=config.loss
     )
-    history = train_model(
+    model, history = train_model(
         save_dir="../models",
         name="gru_model",
         model=model,
@@ -72,7 +57,15 @@ def main():
         dataset_train=dataset_train,
         dataset_val=dataset_val
     )
-    model_loss(history)
+    print("Evaluate on test data")
+    results = model.evaluate(dataset_val, batch_size=128)
+    print("test loss, test acc:", results) 
+    visualize_loss(history, "Training and Validation loss")
+    for x, y in dataset_val.take(5):
+        show_plot(
+            [x[0][:, 7].numpy(), y[0].numpy(), model.predict(x)[0]],
+            title="Single Step Prediction"
+        )
 
 if __name__ == "__main__":
     main()

@@ -13,5 +13,5 @@ def train_model(save_dir, name, model, epochs, dataset_train, dataset_val):
     )
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     model.save("{}/{}.h5".format(save_dir, name))
-    return history
+    return model, history
 

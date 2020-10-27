@@ -1,7 +1,7 @@
 # Config file
 """ The sizes of the hidden layers """
-hidden_layers = [128, 64]
-learning_rate = 0.001
+hidden_layers = [234]
+learning_rate = 0.0001
 optimizer = 'adam'
 loss = "mse"
 train_split = 0.7
@@ -20,4 +20,4 @@ features = [
     "Cloudy weather",
 ]
 selected_features = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-sequence_length = len(selected_features)
+sequence_length = 7

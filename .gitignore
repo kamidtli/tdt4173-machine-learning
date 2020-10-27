@@ -130,5 +130,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .idea
+src/tuning_results
+src/logs
 
 #
