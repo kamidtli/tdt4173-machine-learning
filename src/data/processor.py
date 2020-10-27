@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import pandas as pd
+import tensorflow as tf
 import numpy as np
 
 
@@ -80,5 +81,39 @@ def normalize(data, train_split):
     data_std = data[:train_split].std(axis=0)
     return (data - data_mean) / data_std
 
+
+def load_data(df, selected, config, normalize_values=True):
+
+    selected = [clean_string(i) for i in selected]
+    train_split = int(config.train_split * int(df.shape[0]))
+    features = df[selected]
+    if normalize_values:
+        features = normalize(features.values, train_split)
+
+    train_data = features.iloc[0: train_split - 1]
+    val_data = features.iloc[train_split:]
+
+    x_train = train_data.iloc[:, config.selected_features].values
+    y_train = features[['downfall']][1:train_split]  # 7 is the index of downfall
+
+    print("y_train: ", y_train)
+
+    x_val = val_data.iloc[:, config.selected_features].values
+    y_val = features[['downfall']][train_split:]
+
+    dataset_train = tf.keras.preprocessing.timeseries_dataset_from_array(
+        x_train,
+        y_train,
+        sequence_length=config.sequence_length,
+        batch_size=config.batch_size,
+    )
+    dataset_val = tf.keras.preprocessing.timeseries_dataset_from_array(
+        x_val,
+        y_val,
+        sequence_length=config.sequence_length,
+        batch_size=config.batch_size,
+    )
+
+    return dataset_train, dataset_val
 
 
