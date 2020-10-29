@@ -13,9 +13,11 @@ from models.lstm import lstm_model
 from models.fully_connected import fully_connected_model
 
 # Set seed for reproducibility
+"""
 randomState = 14
 np.random.seed(randomState)
 tf.random.set_seed(randomState)
+"""
 
 def main():
     process_data_bool = True
@@ -63,10 +65,9 @@ def main():
     print("test loss, test acc:", results) 
     visualize_loss(history, "Training and Validation loss")
     for x, y in dataset_val.take(5):
-        print(x[0])
-        print(x[0][:,index_downfall].numpy())
         show_plot(
-            [x[0][:, index_downfall].numpy(), y[0].numpy(), model.predict(x)[0]],
+            [x[0][:, index_downfall].numpy(), y[0].numpy(), model.predict(x)[0], np.average(x[0][:, index_downfall].numpy())],
+            sequence_length=config.sequence_length,
             title="Single Step Prediction"
         )
 

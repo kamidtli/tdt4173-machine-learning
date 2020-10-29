@@ -1,11 +1,11 @@
 # Config file
 """ The sizes of the hidden layers """
 hidden_layers = [234]
-learning_rate = 0.0001
+learning_rate = 0.001
 optimizer = 'adam'
 loss = "mse"
 train_split = 0.7
-epochs = 10
+epochs = 200
 batch_size = 32
 date_time_key = "date"
 features = [

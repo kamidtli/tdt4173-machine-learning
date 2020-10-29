@@ -12,10 +12,11 @@ from data.processor import load_data
 
 def model_builder(hp):
     model = keras.Sequential()
-    model.add(keras.layers.Input(shape=(7, 9)))
+    model.add(keras.layers.Input(shape=(7, 7)))
     #hp_layers = hp.Int('layers',min_value=1, max_value=5)
     hp_units = hp.Int('units', min_value=10, max_value=256, step=32)
     model.add(keras.layers.GRU(units=hp_units, activation='relu'))
+    model.add(keras.layers.Dropout(0.2))
     model.add(keras.layers.Dense(1))
 
     # Tune the learning rate for the optimizer
@@ -40,7 +41,7 @@ class ClearTrainingOutput(tf.keras.callbacks.Callback):
         IPython.display.clear_output(wait = True)
 
 df = read_csv('../data/processed/processed_data.csv')
-df = df.fillna(-1)
+df = df.fillna(0)
 selected = [config.features[i] for i in config.selected_features]
 dataset_train, dataset_val = load_data(df, selected, config, normalize_values=False)
 
