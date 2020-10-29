@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import kerastuner as kt
 
-from data.processor import process_data, fetch_raw_data, preprocess_data, normalize, clean_string, load_data
+from data.processor import process_data, fetch_raw_data, preprocess_data, normalize, clean_string, load_data, process_dataset
 from utils.csv_utils import to_csv, read_csv
 import config
 from evaluate import model_loss, visualize_loss, show_plot
@@ -13,37 +13,38 @@ from models.lstm import lstm_model
 from models.fully_connected import fully_connected_model
 
 # Set seed for reproducibility
-"""
 randomState = 14
 np.random.seed(randomState)
 tf.random.set_seed(randomState)
-"""
 
 def main():
-    process_data_bool = True
-    if process_data_bool:
-        raw_data = fetch_raw_data()
-        df = process_data(raw_data)
-        to_csv(df, '../data/processed/processed_data.csv')
-    else:
-        df = read_csv('../data/processed/processed_data.csv')
-
-    df = df.fillna(0)
-    selected = [config.features[i] for i in config.selected_features]
-    print(
-        "The selected features are:",
-        ", ".join(selected),
+    train_dataset = read_csv('../data/train_data.csv')
+    train_data = process_dataset(
+      train_dataset, 
+      features=config.features, 
+      sequence_length=config.sequence_length,
+      batch_size=config.batch_size
     )
-    index_downfall = selected.index("Downfall")
 
-    dataset_train, dataset_val = load_data(df, selected, config, normalize_values=False)
+    val_dataset = read_csv('../data/validation_data.csv')
+    val_data = process_dataset(
+      val_dataset, 
+      features=config.features, 
+      sequence_length=config.sequence_length,
+      batch_size=config.batch_size
+    )
+    
+    test_dataset = read_csv('../data/test_data.csv')
+    test_data = process_dataset(
+      test_dataset, 
+      features=config.features, 
+      sequence_length=config.sequence_length,
+      batch_size=config.batch_size
+    )
 
-    for batch in dataset_train.take(1):
+    for batch in train_data.take(1):
         inputs, targets = batch
-
-    print("Input shape:", inputs.numpy().shape)
-    print("Target shape:", targets.numpy().shape)
-    print("Input: ", inputs.numpy()[0].shape)
+        break
 
     model = gru_model(
         hidden_layers=config.hidden_layers,
@@ -57,19 +58,29 @@ def main():
         name="gru_model",
         model=model,
         epochs=config.epochs,
-        dataset_train=dataset_train,
-        dataset_val=dataset_val
+        dataset_train=train_data,
+        dataset_val=val_data
     )
     print("Evaluate on test data")
-    results = model.evaluate(dataset_val, batch_size=128)
+    results = model.evaluate(test_data, batch_size=32)
     print("test loss, test acc:", results) 
     visualize_loss(history, "Training and Validation loss")
-    for x, y in dataset_val.take(5):
-        show_plot(
-            [x[0][:, index_downfall].numpy(), y[0].numpy(), model.predict(x)[0], np.average(x[0][:, index_downfall].numpy())],
-            sequence_length=config.sequence_length,
-            title="Single Step Prediction"
-        )
+
+    selected_features = [clean_string(i) for i in config.features]
+    test_dataset = test_dataset.loc[:, selected_features]
+    interference_object = test_dataset.loc[:, test_dataset.columns != 'downfall']
+    downfall_df = test_dataset.loc[:, 'downfall']
+
+    # Bug: Plotting only works when taking 1 object. 
+    for x, y in test_data.take(1):
+      assert np.array_equal(interference_object[0:config.sequence_length],x[0])
+      downfall_values = downfall_df[0:config.sequence_length].values
+      prediction = model.predict(x)[0]
+      show_plot(
+          [downfall_values, y[0].numpy(), prediction, np.average(downfall_values)],
+          sequence_length=config.sequence_length,
+          title="Single Step Prediction"
+      )
 
 if __name__ == "__main__":
     main()

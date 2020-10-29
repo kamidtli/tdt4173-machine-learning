@@ -5,7 +5,7 @@ learning_rate = 0.001
 optimizer = 'adam'
 loss = "mse"
 train_split = 0.7
-epochs = 200
+epochs = 100
 batch_size = 32
 date_time_key = "date"
 features = [
@@ -17,7 +17,7 @@ features = [
     "Temperature",
     "Wind speed",
     "Downfall",
-    "Cloudy weather",
+    # "Cloudy weather",
 ]
 selected_features = [0, 1, 2, 3, 5, 6, 7]
 sequence_length = 7
