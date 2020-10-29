@@ -4,7 +4,6 @@ from tensorflow.keras.layers import Dropout, Dense, SimpleRNN, Input
 
 def simple_rnn_model(hidden_layers, shape, optimizer, loss, use_dropout=False):
     inputs = x = Input(shape=(shape.shape[1], shape.shape[2]))
-    print(hidden_layers)
     for i in hidden_layers:
         x = SimpleRNN(i)(x)
     if use_dropout:

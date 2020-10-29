@@ -23,15 +23,15 @@ def visualize_loss(history, title):
     plt.legend()
     plt.show()
 
-def show_plot(plot_data, title):
-    labels = ["History", "True Future", "Model Prediction"]
-    marker = [".-", "rx", "go"]
+def show_plot(plot_data, sequence_length, title):
+    labels = ["History", "True Future", "Model Prediction", "Average"]
+    marker = [".-", "rx", "go", ".-"]
     plt.title(title)
     for i, val in enumerate(plot_data):
         if i == 0:
             plt.plot(plot_data[i], marker[i], markersize=10, label=labels[i])
         else:
-            plt.plot(7, plot_data[i], marker[i], markersize=10, label=labels[i])
+            plt.plot(sequence_length, plot_data[i], marker[i], markersize=10, label=labels[i])
     plt.legend()
     plt.xlabel("Time-Step")
     plt.show()
