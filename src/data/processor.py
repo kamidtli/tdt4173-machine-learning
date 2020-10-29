@@ -63,18 +63,21 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 def clean_string(input):
     string = deepcopy(input)
     string = string.lower()
     string = string.replace(" ", "_")
     return string
 
+
 def preprocess_data(df: pd.DataFrame, N: int):
     dataset = pd.DataFrame()
     for i in range(N, len(df)):
         print(i)
-        dataset.append({'x': df.iloc[i-N:i-1], 'y': df.iloc[i]})
+        dataset.append({'x': df.iloc[i - N:i - 1], 'y': df.iloc[i]})
     return dataset
+
 
 def normalize(data, train_split):
     data_mean = data[:train_split].mean(axis=0)
@@ -113,5 +116,3 @@ def load_data(df, selected, config, normalize_values=True):
     )
 
     return dataset_train, dataset_val
-
-
