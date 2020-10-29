@@ -1,8 +1,8 @@
 from copy import deepcopy
 
+import numpy as np
 import pandas as pd
 import tensorflow as tf
-import numpy as np
 
 
 def fetch_raw_data() -> pd.DataFrame:

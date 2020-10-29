@@ -1,18 +1,21 @@
 import sys
-from models.fully_connected import fully_connected_model
-from models.lstm import lstm_model
-from models.gru import gru_model
-from train import train_model
-from evaluate import model_loss, visualize_loss, show_plot
-import config
-from utils.csv_utils import to_csv, read_csv
-from data.processor import process_data, fetch_raw_data, preprocess_data, normalize, clean_string, load_data
-import pandas as pd
-import tensorflow as tf
-import numpy as np
+
 import kerastuner as kt
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import tensorflow as tf
 from pandas.plotting import register_matplotlib_converters
+
+import config
+from data.processor import (clean_string, fetch_raw_data, load_data, normalize,
+                            preprocess_data, process_data)
+from evaluate import model_loss, show_plot, visualize_loss
+from models.fully_connected import fully_connected_model
+from models.gru import gru_model
+from models.lstm import lstm_model
+from train import train_model
+from utils.csv_utils import read_csv, to_csv
 
 register_matplotlib_converters()
 
