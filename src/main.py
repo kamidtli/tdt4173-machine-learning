@@ -66,21 +66,6 @@ def main():
     print("test loss, test acc:", results) 
     visualize_loss(history, "Training and Validation loss")
 
-    selected_features = [clean_string(i) for i in config.features]
-    test_dataset = test_dataset.loc[:, selected_features]
-    interference_object = test_dataset.loc[:, test_dataset.columns != 'downfall']
-    downfall_df = test_dataset.loc[:, 'downfall']
-
-    # Bug: Plotting only works when taking 1 object. 
-    for x, y in test_data.take(1):
-      assert np.array_equal(interference_object[0:config.sequence_length],x[0])
-      downfall_values = downfall_df[0:config.sequence_length].values
-      prediction = model.predict(x)[0]
-      show_plot(
-          [downfall_values, y[0].numpy(), prediction, np.average(downfall_values)],
-          sequence_length=config.sequence_length,
-          title="Single Step Prediction"
-      )
 
 if __name__ == "__main__":
     main()
