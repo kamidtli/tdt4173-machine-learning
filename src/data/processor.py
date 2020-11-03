@@ -1,8 +1,9 @@
 from copy import deepcopy
 
+import numpy as np
 import pandas as pd
 import tensorflow as tf
-import numpy as np
+
 
 def fetch_raw_data() -> pd.DataFrame:
     data_2002_1 = pd.read_csv('../data/raw/data_2002_1.csv')
@@ -62,18 +63,21 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 def clean_string(input):
     string = deepcopy(input)
     string = string.lower()
     string = string.replace(" ", "_")
     return string
 
+
 def preprocess_data(df: pd.DataFrame, N: int):
     dataset = pd.DataFrame()
     for i in range(N, len(df)):
         print(i)
-        dataset.append({'x': df.iloc[i-N:i-1], 'y': df.iloc[i]})
+        dataset.append({'x': df.iloc[i - N:i - 1], 'y': df.iloc[i]})
     return dataset
+
 
 def normalize(data, train_split):
     data_mean = data[:train_split].mean(axis=0)
@@ -116,32 +120,32 @@ def load_data(df, selected, config, normalize_values=True):
 
 def process_dataset(df, features, sequence_length, batch_size=32, fill_value=0):
 
-  df.fillna(fill_value)
+    df.fillna(fill_value)
 
-  # Remove unwanted features
-  selected_features = [clean_string(i) for i in features]
-  df = df.loc[:, selected_features]
+    # Remove unwanted features
+    selected_features = [clean_string(i) for i in features]
+    df = df.loc[:, selected_features]
 
-  # Split into datapoints (x) and labels (y)
-  x = df.loc[:, df.columns != 'downfall']
-  y = df.loc[:, 'downfall']
+    # Split into datapoints (x) and labels (y)
+    x = df.loc[:, df.columns != 'downfall']
+    y = df.loc[:, 'downfall']
 
-  # Offset to create timeseries_dataset
-  x = x.iloc[:-sequence_length]
-  y = y.iloc[sequence_length:]
+    # Offset to create timeseries_dataset
+    x = x.iloc[:-sequence_length]
+    y = y.iloc[sequence_length:]
 
-  timeseries_dataset = tf.keras.preprocessing.timeseries_dataset_from_array(
-    x,
-    y,
-    sequence_length=sequence_length,
-    batch_size=batch_size,
-  )
+    timeseries_dataset = tf.keras.preprocessing.timeseries_dataset_from_array(
+        x,
+        y,
+        sequence_length=sequence_length,
+        batch_size=batch_size,
+    )
 
-  # Test each batch to see if 
-  for i, batch in enumerate(timeseries_dataset):
-    inputs, targets = batch
-    for j in range(len(inputs)):
-      assert np.array_equal(inputs[j], x[i*batch_size + j:i*batch_size + j + sequence_length])
-      assert np.array_equal(targets[j], y[i*batch_size + j])
+    # Test each batch to see if
+    for i, batch in enumerate(timeseries_dataset):
+        inputs, targets = batch
+        for j in range(len(inputs)):
+            assert np.array_equal(inputs[j], x[i * batch_size + j:i * batch_size + j + sequence_length])
+            assert np.array_equal(targets[j], y[i * batch_size + j])
 
-  return timeseries_dataset
+    return timeseries_dataset

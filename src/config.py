@@ -1,11 +1,18 @@
 # Config file
+
+process_data = False
+load_model = True
+plot_single_step_predictions = True
+plot_all_predictions = True
+model_name = 'gru_model'
+
 """ The sizes of the hidden layers """
 hidden_layers = [234]
 learning_rate = 0.001
 optimizer = 'adam'
 loss = "mse"
 train_split = 0.7
-epochs = 100
+epochs = 25
 batch_size = 32
 date_time_key = "date"
 features = [
