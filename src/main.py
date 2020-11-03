@@ -95,12 +95,7 @@ def main():
         actual_flat = [float(item) for sublist in actual_values for item in sublist]
 
         # Get dates for validation set
-
         all_dates = list(test_dataset.index)
-
-        length = len(all_dates[config.sequence_length:])
-
-        rest = length % config.sequence_length
         dates = all_dates[config.sequence_length: (len(all_dates) - config.sequence_length) + 1]
 
         plt.plot(dates, predictions_flat)
