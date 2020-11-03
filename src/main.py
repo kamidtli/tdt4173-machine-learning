@@ -7,6 +7,8 @@ import pandas as pd
 import tensorflow as tf
 from pandas.plotting import register_matplotlib_converters
 
+from data.processor import process_data, fetch_raw_data, preprocess_data, normalize, clean_string, load_data, process_dataset
+from utils.csv_utils import to_csv, read_csv
 import config
 from data.processor import (clean_string, fetch_raw_data, load_data, normalize,
                             preprocess_data, process_data)
@@ -21,44 +23,45 @@ register_matplotlib_converters()
 
 
 # Set seed for reproducibility
-"""
 randomState = 14
 np.random.seed(randomState)
 tf.random.set_seed(randomState)
-"""
 
 
 def main():
-    process_data = config.process_data
+    model_name = config.model_name
     load_model = config.load_model
 
-    if process_data:
-        raw_data = fetch_raw_data()
-        df = process_data(raw_data)
-        to_csv(df, '../data/processed/processed_data.csv')
-    else:
-        df = read_csv('../data/processed/processed_data.csv')
-
-    df = df.fillna(0)
-    selected = [config.features[i] for i in config.selected_features]
-    print(
-        "The selected features are:",
-        ", ".join(selected),
+    train_dataset = read_csv('../data/train_data.csv')
+    train_data = process_dataset(
+        train_dataset,
+        features=config.features,
+        sequence_length=config.sequence_length,
+        batch_size=config.batch_size
     )
-    index_downfall = selected.index("Downfall")
 
-    dataset_train, dataset_val = load_data(df, selected, config, normalize_values=False)
+    val_dataset = read_csv('../data/validation_data.csv')
+    val_data = process_dataset(
+        val_dataset,
+        features=config.features,
+        sequence_length=config.sequence_length,
+        batch_size=config.batch_size
+    )
 
-    for batch in dataset_train.take(1):
+    test_dataset = read_csv('../data/test_data.csv')
+    test_data = process_dataset(
+        test_dataset,
+        features=config.features,
+        sequence_length=config.sequence_length,
+        batch_size=config.batch_size
+    )
+
+    for batch in train_data.take(1):
         inputs, targets = batch
-
-    print("Input shape:", inputs.numpy().shape)
-    print("Target shape:", targets.numpy().shape)
-    print("Input: ", inputs.numpy()[0].shape)
+        break
 
     if load_model:
-        model = tf.keras.models.load_model("../models/gru_model.h5")
-
+        model = tf.keras.models.load_model("../models/{}.h5".format(model_name))
     else:
         model = gru_model(
             hidden_layers=config.hidden_layers,
@@ -69,38 +72,36 @@ def main():
         )
         model, history = train_model(
             save_dir="../models",
-            name="gru_model",
+            name=model_name,
             model=model,
             epochs=config.epochs,
-            dataset_train=dataset_train,
-            dataset_val=dataset_val
+            dataset_train=train_data,
+            dataset_val=val_data
         )
         print("Evaluate on test data")
-        results = model.evaluate(dataset_val, batch_size=128)
+        results = model.evaluate(test_data, batch_size=32)
         print("test loss, test acc:", results)
         visualize_loss(history, "Training and Validation loss")
-
-    if config.plot_single_step_predictions:
-        for x, y in dataset_val.take(5):
-            show_plot(
-                [x[0][:, index_downfall].numpy(), y[0].numpy(), model.predict(x)[0], np.average(x[0][:, index_downfall].numpy())],
-                sequence_length=config.sequence_length,
-                title="Single Step Prediction"
-            )
 
     if config.plot_all_predictions:
         predictions = []
         actual_values = []
-        for x, y in dataset_val:
+        for x, y in test_data:
             predictions.append(model.predict(x))
             actual_values.append(y)
 
         # Flatten lists
-        predictions_flat = [item for sublist in predictions for item in sublist]
+        predictions_flat = [item[0] for sublist in predictions for item in sublist]
         actual_flat = [float(item) for sublist in actual_values for item in sublist]
 
         # Get dates for validation set
-        dates = list(df.index[-len(actual_flat):])
+
+        all_dates = list(test_dataset.index)
+
+        length = len(all_dates[config.sequence_length:])
+
+        rest = length % config.sequence_length
+        dates = all_dates[config.sequence_length: (len(all_dates) - config.sequence_length) + 1]
 
         plt.plot(dates, predictions_flat)
         plt.plot(dates, actual_flat)

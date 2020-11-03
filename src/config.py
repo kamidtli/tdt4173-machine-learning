@@ -4,6 +4,7 @@ process_data = False
 load_model = True
 plot_single_step_predictions = True
 plot_all_predictions = True
+model_name = 'gru_model'
 
 """ The sizes of the hidden layers """
 hidden_layers = [234]
@@ -23,7 +24,7 @@ features = [
     "Temperature",
     "Wind speed",
     "Downfall",
-    "Cloudy weather",
+    # "Cloudy weather",
 ]
 selected_features = [0, 1, 2, 3, 5, 6, 7]
 sequence_length = 7
