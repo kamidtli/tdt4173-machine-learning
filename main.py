@@ -1,57 +1,46 @@
-import sys
-
-import kerastuner as kt
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 import tensorflow as tf
 from pandas.plotting import register_matplotlib_converters
 
-from data.processor import process_data, fetch_raw_data, preprocess_data, normalize, clean_string, load_data, process_dataset
-from utils.csv_utils import to_csv, read_csv
-import config
-from data.processor import (clean_string, fetch_raw_data, load_data, normalize,
-                            preprocess_data, process_data)
-from evaluate import model_loss, show_plot, visualize_loss
-from models.fully_connected import fully_connected_model
-from models.gru import gru_model
-from models.lstm import lstm_model
+from src.data.processor import process_dataset
+import src.config as config
+from src.evaluate import visualize_loss
+from src.models.fully_connected import fully_connected_model
 from train import train_model
-from utils.csv_utils import read_csv, to_csv
+from src.utils.csv_utils import read_csv
 
 register_matplotlib_converters()
 
 
 # Set seed for reproducibility
-randomState = 14
-np.random.seed(randomState)
-tf.random.set_seed(randomState)
-
 
 def main():
     model_name = config.model_name
     load_model = config.load_model
 
-    train_dataset = read_csv('../data/train_data.csv')
+    train_dataset = read_csv('data/train_data.csv')
     train_data = process_dataset(
         train_dataset,
         features=config.features,
+        flattened=True,
         sequence_length=config.sequence_length,
         batch_size=config.batch_size
     )
 
-    val_dataset = read_csv('../data/validation_data.csv')
+    val_dataset = read_csv('data/validation_data.csv')
     val_data = process_dataset(
         val_dataset,
         features=config.features,
+        flattened=True,
         sequence_length=config.sequence_length,
         batch_size=config.batch_size
     )
 
-    test_dataset = read_csv('../data/test_data.csv')
+    test_dataset = read_csv('data/test_data.csv')
     test_data = process_dataset(
         test_dataset,
         features=config.features,
+        flattened=True,
         sequence_length=config.sequence_length,
         batch_size=config.batch_size
     )
@@ -63,7 +52,7 @@ def main():
     if load_model:
         model = tf.keras.models.load_model("../models/{}.h5".format(model_name))
     else:
-        model = gru_model(
+        model = fully_connected_model(
             hidden_layers=config.hidden_layers,
             shape=inputs,
             optimizer=config.optimizer,
@@ -71,7 +60,7 @@ def main():
             use_dropout=True
         )
         model, history = train_model(
-            save_dir="../models",
+            save_dir="models",
             name=model_name,
             model=model,
             epochs=config.epochs,

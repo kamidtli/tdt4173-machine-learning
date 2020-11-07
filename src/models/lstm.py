@@ -1,15 +1,17 @@
 from tensorflow.keras import Model
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dropout, TimeDistributed, Dense, Activation, LSTM, Input
 
-def lstm_model(hidden_layers, shape, optimizer, loss, use_dropout=False):
+def lstm_model(hidden_layers, shape, learning_rate, loss, use_dropout=False):
     inputs = Input(shape=(shape.shape[1], shape.shape[2]))
-    x = LSTM(hidden_layers[0], return_sequences=False)(inputs)
+    x = LSTM(hidden_layers[0], return_sequences=True)(inputs)
     for i in range(1,len(hidden_layers)):
-        x = LSTM(hidden_layers[i])(x)
+        x = LSTM(hidden_layers[i], return_sequences=True)(x)
     if use_dropout:
-        inputs = Dropout(0.5)(x)
+        x = Dropout(0.5)(x)
     outputs = Dense(1)(x)
     model = Model(inputs, outputs)
-    model.compile(optimizer=optimizer, loss=loss)
+    optimizer = Adam(learning_rate=learning_rate)
+    model.compile(optimizer=optimizer, loss=loss, metrics=["mae"])
     return model
 

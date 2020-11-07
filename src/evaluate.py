@@ -10,7 +10,7 @@ def model_loss(history):
     plt.legend(loc='upper right')
     plt.show();
 
-def visualize_loss(history, title):
+def visualize_loss(history, title, save_dir):
     loss = history.history["loss"]
     val_loss = history.history["val_loss"]
     epochs = range(len(loss))
@@ -21,7 +21,7 @@ def visualize_loss(history, title):
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()
-    plt.show()
+    plt.savefig("{}/training_loss.png".format(save_dir))
 
 def show_plot(plot_data, sequence_length, title):
     labels = ["History", "True Future", "Model Prediction", "Average"]

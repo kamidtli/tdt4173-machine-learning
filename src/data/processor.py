@@ -74,7 +74,6 @@ def clean_string(input):
 def preprocess_data(df: pd.DataFrame, N: int):
     dataset = pd.DataFrame()
     for i in range(N, len(df)):
-        print(i)
         dataset.append({'x': df.iloc[i - N:i - 1], 'y': df.iloc[i]})
     return dataset
 
@@ -118,16 +117,17 @@ def load_data(df, selected, config, normalize_values=True):
     return dataset_train, dataset_val
 
 
-def process_dataset(df, features, sequence_length, batch_size=32, fill_value=0):
+def process_dataset(df, features, sequence_length, flattened, batch_size=32, fill_value=0):
 
-    df.fillna(fill_value)
+    # Uncomment if you want to normalize the data
+    # df = (df-df.mean())/df.std()
 
     # Remove unwanted features
     selected_features = [clean_string(i) for i in features]
     df = df.loc[:, selected_features]
 
     # Split into datapoints (x) and labels (y)
-    x = df.loc[:, df.columns != 'downfall']
+    x = df.loc[:, :]
     y = df.loc[:, 'downfall']
 
     # Offset to create timeseries_dataset
@@ -141,11 +141,26 @@ def process_dataset(df, features, sequence_length, batch_size=32, fill_value=0):
         batch_size=batch_size,
     )
 
+    def reshapeTensor(x,y):
+        new_x = tf.reshape(x, [-1])
+        return (new_x,y)
+
+    if flattened:
+        timeseries_dataset = timeseries_dataset.unbatch().map(reshapeTensor).batch(32)
+        """        
+        for batch in timeseries_dataset:
+            inputs, targets = batch
+            for j in range(len(inputs)):
+                dataset.append((tf.reshape(inputs[j], [-1]), targets[j]))
+        """
+
+    """
     # Test each batch to see if
     for i, batch in enumerate(timeseries_dataset):
         inputs, targets = batch
         for j in range(len(inputs)):
             assert np.array_equal(inputs[j], x[i * batch_size + j:i * batch_size + j + sequence_length])
             assert np.array_equal(targets[j], y[i * batch_size + j])
+    """
 
     return timeseries_dataset
