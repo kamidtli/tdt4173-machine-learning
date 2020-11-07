@@ -1,7 +1,6 @@
 
-import tensorflow as tf
 # Config file
-
+experiments = True
 process_data = False
 load_model = False
 plot_single_step_predictions = True
@@ -10,7 +9,7 @@ model_name = 'gru_model'
 
 """ The sizes of the hidden layers """
 hidden_layers = [234, 10]
-loss = "mse"
+loss = 'mse'
 train_split = 0.7
 epochs = 10
 batch_size = 32
@@ -26,6 +25,8 @@ features = [
     "Downfall",
     # "Cloudy weather",
 ]
+
+# Experiments configuration
 selected_features = [0, 1, 2, 3, 5, 6, 7]
 sequence_length = 7
 models = {
@@ -41,10 +42,10 @@ models = {
         "hidden_layers": [170, 10, 10],
         "learning_rate": 0.01
     },
-    "simple_rnn": {
-        "hidden_layers": [234, 138, 10],
-        "learning_rate": 0.01
-    }
+    # "simple_rnn": {
+    #     "hidden_layers": [234, 138, 10],
+    #     "learning_rate": 0.01
+    # }
 }
 
 sequence_lengths = [1, 3, 7, 14]
