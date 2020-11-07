@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
+import config as config
+from utils.csv_utils import read_csv
+
 
 def fetch_raw_data() -> pd.DataFrame:
     data_2002_1 = pd.read_csv('../data/raw/data_2002_1.csv')
@@ -147,20 +150,44 @@ def process_dataset(df, features, sequence_length, flattened, batch_size=32, fil
 
     if flattened:
         timeseries_dataset = timeseries_dataset.unbatch().map(reshapeTensor).batch(32)
-        """        
-        for batch in timeseries_dataset:
+
+    # Test each batch to see if
+    if not flattened:
+        for i, batch in enumerate(timeseries_dataset):
             inputs, targets = batch
             for j in range(len(inputs)):
-                dataset.append((tf.reshape(inputs[j], [-1]), targets[j]))
-        """
-
-    """
-    # Test each batch to see if
-    for i, batch in enumerate(timeseries_dataset):
-        inputs, targets = batch
-        for j in range(len(inputs)):
-            assert np.array_equal(inputs[j], x[i * batch_size + j:i * batch_size + j + sequence_length])
-            assert np.array_equal(targets[j], y[i * batch_size + j])
-    """
+                assert np.array_equal(inputs[j], x[i * batch_size + j:i * batch_size + j + sequence_length])
+                assert np.array_equal(targets[j], y[i * batch_size + j])
 
     return timeseries_dataset
+
+
+def load_data(features, flattend, sequence_length):
+    train_dataset = read_csv('../data/train_data.csv')
+    train_data = process_dataset(
+        train_dataset,
+        features=features,
+        flattened=flattend,
+        sequence_length=sequence_length,
+        batch_size=config.batch_size
+    )
+
+    val_dataset = read_csv('../data/validation_data.csv')
+    val_data = process_dataset(
+        val_dataset,
+        features=features,
+        flattened=flattend,
+        sequence_length=sequence_length,
+        batch_size=config.batch_size
+    )
+
+    test_dataset = read_csv('../data/test_data.csv')
+    test_data = process_dataset(
+        test_dataset,
+        features=features,
+        flattened=flattend,
+        sequence_length=sequence_length,
+        batch_size=config.batch_size
+    )
+
+    return train_data, train_dataset, val_data, val_dataset, test_data, test_dataset

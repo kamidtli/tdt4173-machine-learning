@@ -11,8 +11,7 @@ from models.fully_connected import fully_connected_model
 from models.gru import gru_model
 from models.lstm import lstm_model
 from models.simple_rnn import simple_rnn_model
-from utils.csv_utils import read_csv
-from utils.load_data import load_data
+from data.processor import load_data
 from utils.plotting import plot_predictions
 import datetime
 
@@ -108,5 +107,14 @@ def run_experiment(model_name,
         myfile.write('{}, {}-sequence-length-{}-features-{}, {}, {}\n'.format(datetime.datetime.now(), model_name, sequence_length, len(features), results[0], results[1]))
     visualize_loss(history, 'Training and Validation loss', save_dir)
 
+    with open('{}/{}'.format(save_dir, "results.txt"), 'w') as f:
+        f.write("test loss, test acc: {}".format(results))
+    visualize_loss(history, "Training and Validation loss", save_dir)
+
     if config.plot_all_predictions:
         plot_predictions(test_data, test_dataset, trained_model, sequence_length, save_dir, True)
+
+
+if __name__ == "__main__":
+    run_experiments()
+

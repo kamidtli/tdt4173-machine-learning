@@ -10,7 +10,8 @@ hidden_layers = [234, 10]
 learning_rate = 0.001
 loss = 'mse'
 train_split = 0.7
-epochs = 100
+learning_rate=0.001
+epochs = 150
 batch_size = 32
 date_time_key = 'date'
 features = [
@@ -41,10 +42,10 @@ models = {
         'hidden_layers': [170, 10, 10],
         'learning_rate': 0.01
     },
-    # 'simple_rnn': {
-    #     'hidden_layers': [234, 138, 10],
-    #     'learning_rate': 0.01
-    # }
+    'simple_rnn': {
+        'hidden_layers': [234, 138, 10],
+         'learning_rate': 0.01
+    }
 }
 
 sequence_lengths = [1, 3, 7, 14]
