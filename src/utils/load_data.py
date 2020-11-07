@@ -1,12 +1,12 @@
 
 
-from src.data.processor import process_dataset
-from src.utils.csv_utils import read_csv
-from src import config
+from data.processor import process_dataset
+from utils.csv_utils import read_csv
+import config
 
 
 def load_data(features, flattend, sequence_length):
-    train_dataset = read_csv('data/train_data.csv')
+    train_dataset = read_csv('../data/train_data.csv')
     train_data = process_dataset(
         train_dataset,
         features=features,
@@ -15,7 +15,7 @@ def load_data(features, flattend, sequence_length):
         batch_size=config.batch_size
     )
 
-    val_dataset = read_csv('data/validation_data.csv')
+    val_dataset = read_csv('../data/validation_data.csv')
     val_data = process_dataset(
         val_dataset,
         features=features,
@@ -24,7 +24,7 @@ def load_data(features, flattend, sequence_length):
         batch_size=config.batch_size
     )
 
-    test_dataset = read_csv('data/test_data.csv')
+    test_dataset = read_csv('../data/test_data.csv')
     test_data = process_dataset(
         test_dataset,
         features=features,
