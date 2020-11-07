@@ -6,10 +6,10 @@ import config as config
 from evaluate import visualize_loss
 from models.fully_connected import fully_connected_model
 from models.gru import gru_model
-from train import train_model, run_experiments
+from train import run_experiments, train_model
 from utils.csv_utils import read_csv
-from utils.plotting import plot_predictions
 from utils.load_data import load_data
+from utils.plotting import plot_predictions
 
 register_matplotlib_converters()
 

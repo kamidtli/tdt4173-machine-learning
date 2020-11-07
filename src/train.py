@@ -1,15 +1,16 @@
 # Training script
-import tensorflow as tf
 from pathlib import Path
-import matplotlib.pyplot as plt
 
-from data.processor import process_dataset
+import matplotlib.pyplot as plt
+import tensorflow as tf
+
 import config as config
+from data.processor import process_dataset
 from evaluate import visualize_loss
 from models.fully_connected import fully_connected_model
 from models.gru import gru_model
-from models.simple_rnn import simple_rnn_model
 from models.lstm import lstm_model
+from models.simple_rnn import simple_rnn_model
 from utils.csv_utils import read_csv
 from utils.load_data import load_data
 from utils.plotting import plot_predictions

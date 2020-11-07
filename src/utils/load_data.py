@@ -1,8 +1,7 @@
-
-
-from data.processor import process_dataset
-from utils.csv_utils import read_csv
 import config
+from data.processor import process_dataset
+
+from utils.csv_utils import read_csv
 
 
 def load_data(features, flattend, sequence_length):
