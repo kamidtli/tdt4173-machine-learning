@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+
 def model_loss(history):
     plt.figure(figsize=(8, 4))
     plt.plot(history.history['loss'], label='Train Loss')
@@ -8,7 +9,8 @@ def model_loss(history):
     plt.ylabel('loss')
     plt.xlabel('epochs')
     plt.legend(loc='upper right')
-    plt.show();
+    plt.show()
+
 
 def visualize_loss(history, title, save_dir):
     loss = history.history["loss"]
@@ -22,6 +24,8 @@ def visualize_loss(history, title, save_dir):
     plt.ylabel("Loss")
     plt.legend()
     plt.savefig("{}/training_loss.png".format(save_dir))
+    plt.clf()
+
 
 def show_plot(plot_data, sequence_length, title):
     labels = ["History", "True Future", "Model Prediction", "Average"]
@@ -36,7 +40,3 @@ def show_plot(plot_data, sequence_length, title):
     plt.xlabel("Time-Step")
     plt.show()
     return
-
-
-
-

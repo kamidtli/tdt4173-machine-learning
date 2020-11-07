@@ -141,9 +141,9 @@ def process_dataset(df, features, sequence_length, flattened, batch_size=32, fil
         batch_size=batch_size,
     )
 
-    def reshapeTensor(x,y):
+    def reshapeTensor(x, y):
         new_x = tf.reshape(x, [-1])
-        return (new_x,y)
+        return (new_x, y)
 
     if flattened:
         timeseries_dataset = timeseries_dataset.unbatch().map(reshapeTensor).batch(32)
