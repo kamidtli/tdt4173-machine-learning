@@ -31,7 +31,7 @@ def main():
             break
 
         if load_model:
-            model = tf.keras.models.load_model("../models/{}.h5".format(model_name))
+            trained_model = tf.keras.models.load_model("../models/{}.h5".format(model_name))
         else:
             model = gru_model(
                 hidden_layers=config.hidden_layers,
@@ -41,7 +41,7 @@ def main():
                 use_dropout=True
             )
             trained_model, history = train_model(
-                save_dir="models",
+                save_dir="../models",
                 name=model_name,
                 model=model,
                 epochs=config.epochs,
