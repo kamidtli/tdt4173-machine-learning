@@ -16,12 +16,15 @@ from utils.plotting import plot_predictions
 import datetime
 
 
-def train_model(save_dir, name, model, epochs, dataset_train, dataset_val):
+def train_model(save_dir, name, model, epochs, learning_rate, batch_size, dataset_train, dataset_val):
     # Train
-    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir='src/logs')
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    model.compile(optimizer=optimizer, loss=config.loss, metrics=['mae'])
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir='{}/logs'.format(save_dir))
     history = model.fit(
         dataset_train,
         epochs=epochs,
+        batch_size=batch_size,
         validation_data=dataset_val,
         callbacks=[tensorboard_callback],
     )
@@ -35,7 +38,8 @@ def run_experiments():
         for seq_length in config.sequence_lengths:
             for name in config.models:
                 run_experiment(model_name=name,
-                               hidden_layers=config.models.get(name)['hidden_layers'],
+                               hidden_layer=config.models.get(name)['hidden_layer'],
+                               dense_layer=config.models.get(name)['dense_layer'],
                                learning_rate=config.models.get(name)['learning_rate'],
                                sequence_length=seq_length,
                                features=config.experiment_features.get(j)
@@ -43,15 +47,16 @@ def run_experiments():
 
 
 def run_experiment(model_name,
-                   hidden_layers,
+                   hidden_layer,
+                   dense_layer,
                    learning_rate,
                    sequence_length,
                    features
                    ):
-    flattend = True if model_name == 'fully_connected' else False
-    train_data, train_dataset, val_data, val_dataset, test_data, test_dataset = load_data(features, flattend, sequence_length)
 
-    save_dir = 'experiments/{}-sequence-length-{}-features-{}'.format(model_name, sequence_length, len(features))
+    train_data, train_dataset, val_data, val_dataset, test_data, test_dataset = load_data(features, sequence_length)
+
+    save_dir = '../experiments/{}-sequence-length-{}-features-{}'.format(model_name, sequence_length, len(features))
     Path(save_dir).mkdir(parents=True, exist_ok=True)
 
     for batch in train_data.take(1):
@@ -60,35 +65,30 @@ def run_experiment(model_name,
 
     if model_name == 'fully_connected':
         model = fully_connected_model(
-            hidden_layers=hidden_layers,
-            learning_rate=learning_rate,
+            hidden_layer=hidden_layer,
+            dense_layer=dense_layer,
             shape=inputs,
-            loss=config.loss,
             use_dropout=True
         )
     elif model_name == 'lstm':
         model = lstm_model(
-            hidden_layers=hidden_layers,
-            learning_rate=learning_rate,
+            hidden_layer=hidden_layer,
+            dense_layer=dense_layer,
             shape=inputs,
-            loss=config.loss,
             use_dropout=True
         )
     elif model_name == 'simple_rnn':
         model = simple_rnn_model(
-            hidden_layers=hidden_layers,
-            learning_rate=learning_rate,
+            hidden_layer=hidden_layer,
+            dense_layer=dense_layer,
             shape=inputs,
-            loss=config.loss,
             use_dropout=True
         )
-
     else:
         model = gru_model(
-            hidden_layers=hidden_layers,
-            learning_rate=learning_rate,
+            hidden_layer=hidden_layer,
+            dense_layer=dense_layer,
             shape=inputs,
-            loss=config.loss,
             use_dropout=True
         )
 
@@ -96,6 +96,8 @@ def run_experiment(model_name,
         save_dir=save_dir,
         name=model_name,
         model=model,
+        learning_rate=learning_rate,
+        batch_size=config.batch_size,
         epochs=config.epochs,
         dataset_train=train_data,
         dataset_val=val_data
@@ -103,8 +105,10 @@ def run_experiment(model_name,
     print('Evaluate on test data')
     results = trained_model.evaluate(test_data, batch_size=32)
     print('test loss, test acc:', results)
-    with open('experiments/experiment_results.txt', 'a') as myfile:
-        myfile.write('{}, {}-sequence-length-{}-features-{}, {}, {}\n'.format(datetime.datetime.now(), model_name, sequence_length, len(features), results[0], results[1]))
+    with open('../experiments/experiment_results.txt', 'a') as myfile:
+        myfile.write('{}, {}-sequence-length-{}-features-{}, {}, {}\n'.format(datetime.datetime.now(), model_name,
+                                                                              sequence_length, len(features),
+                                                                              results[0], results[1]))
     visualize_loss(history, 'Training and Validation loss', save_dir)
 
     with open('{}/{}'.format(save_dir, "results.txt"), 'w') as f:
@@ -117,4 +121,3 @@ def run_experiment(model_name,
 
 if __name__ == "__main__":
     run_experiments()
-

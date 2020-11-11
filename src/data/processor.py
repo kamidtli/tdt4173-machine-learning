@@ -80,47 +80,7 @@ def preprocess_data(df: pd.DataFrame, N: int):
         dataset.append({'x': df.iloc[i - N:i - 1], 'y': df.iloc[i]})
     return dataset
 
-
-def normalize(data, train_split):
-    data_mean = data[:train_split].mean(axis=0)
-    data_std = data[:train_split].std(axis=0)
-    return (data - data_mean) / data_std
-
-
-def load_data(df, selected, config, normalize_values=True):
-
-    selected = [clean_string(i) for i in selected]
-    train_split = int(config.train_split * int(df.shape[0]))
-    features = df[selected]
-    if normalize_values:
-        features = normalize(features.values, train_split)
-
-    train_data = features.iloc[0: train_split - 1]
-    val_data = features.iloc[train_split:]
-
-    x_train = train_data.loc[:, selected].values
-    y_train = features[['downfall']][1:train_split]  # 7 is the index of downfall
-
-    x_val = val_data.loc[:, selected].values
-    y_val = features[['downfall']][train_split:]
-
-    dataset_train = tf.keras.preprocessing.timeseries_dataset_from_array(
-        x_train,
-        y_train,
-        sequence_length=config.sequence_length,
-        batch_size=config.batch_size,
-    )
-    dataset_val = tf.keras.preprocessing.timeseries_dataset_from_array(
-        x_val,
-        y_val,
-        sequence_length=config.sequence_length,
-        batch_size=config.batch_size,
-    )
-
-    return dataset_train, dataset_val
-
-
-def process_dataset(df, features, sequence_length, flattened, batch_size=32, fill_value=0):
+def process_dataset(df, features, sequence_length, batch_size=32, fill_value=0):
 
     # Uncomment if you want to normalize the data
     # df = (df-df.mean())/df.std()
@@ -144,30 +104,21 @@ def process_dataset(df, features, sequence_length, flattened, batch_size=32, fil
         batch_size=batch_size,
     )
 
-    def reshapeTensor(x, y):
-        new_x = tf.reshape(x, [-1])
-        return (new_x, y)
-
-    if flattened:
-        timeseries_dataset = timeseries_dataset.unbatch().map(reshapeTensor).batch(32)
-
     # Test each batch to see if
-    if not flattened:
-        for i, batch in enumerate(timeseries_dataset):
-            inputs, targets = batch
-            for j in range(len(inputs)):
-                assert np.array_equal(inputs[j], x[i * batch_size + j:i * batch_size + j + sequence_length])
-                assert np.array_equal(targets[j], y[i * batch_size + j])
+    for i, batch in enumerate(timeseries_dataset):
+        inputs, targets = batch
+        for j in range(len(inputs)):
+            assert np.array_equal(inputs[j], x[i * batch_size + j:i * batch_size + j + sequence_length])
+            assert np.array_equal(targets[j], y[i * batch_size + j])
 
     return timeseries_dataset
 
 
-def load_data(features, flattend, sequence_length):
+def load_data(features, sequence_length):
     train_dataset = read_csv('../data/train_data.csv')
     train_data = process_dataset(
         train_dataset,
         features=features,
-        flattened=flattend,
         sequence_length=sequence_length,
         batch_size=config.batch_size
     )
@@ -176,7 +127,6 @@ def load_data(features, flattend, sequence_length):
     val_data = process_dataset(
         val_dataset,
         features=features,
-        flattened=flattend,
         sequence_length=sequence_length,
         batch_size=config.batch_size
     )
@@ -185,7 +135,6 @@ def load_data(features, flattend, sequence_length):
     test_data = process_dataset(
         test_dataset,
         features=features,
-        flattened=flattend,
         sequence_length=sequence_length,
         batch_size=config.batch_size
     )
