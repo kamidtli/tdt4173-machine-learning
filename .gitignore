@@ -1,5 +1,7 @@
-experiments/
 models
+tuning_results
+experiments/*/logs
+!tuning_results/tuning_results.txt
 
 .DS_Store
 .vscode
@@ -133,10 +135,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .idea
-src/tuning_results
-src/logs
-src/logs/validation
-src/logs/train
-logs
-
 #

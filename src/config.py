@@ -3,17 +3,17 @@
 experiments = True
 load_model = False
 plot_all_predictions = True
-model_name = 'gru_model'
+model_name = 'lstm_model'
 
 """ The sizes of the hidden layers """
-hidden_layers = [234, 10]
+hidden_layer = 138
+dense_layer = 138
 learning_rate = 0.001
 loss = 'mse'
-train_split = 0.7
-learning_rate=0.001
-epochs = 150
+epochs = 100
 batch_size = 32
 date_time_key = 'date'
+sequence_length = 1
 features = [
     'Air Pressure',
     'Water vapor pressure',
@@ -25,26 +25,28 @@ features = [
     'Downfall',
     # 'Cloudy weather',
 ]
-selected_features = [0, 1, 2, 3, 5, 6, 7]
-sequence_length = 1
 
 # Experiments configuration
 models = {
     'gru': {
-        'hidden_layers': [234, 10],
+        'hidden_layer': 234,
+        'dense_layer': 234,
         'learning_rate': 0.001
     },
     'lstm': {
-        'hidden_layers': [202, 170, 170],
-        'learning_rate': 0.01
+        'hidden_layer': 234,
+        'dense_layer': 170,
+        'learning_rate': 0.001
     },
     'fully_connected': {
-        'hidden_layers': [170, 10, 10],
-        'learning_rate': 0.01
+        'hidden_layer': 138,
+        'dense_layer': 234,
+        'learning_rate': 0.001
     },
     'simple_rnn': {
-        'hidden_layers': [234, 138, 10],
-         'learning_rate': 0.01
+        'hidden_layer': 234,
+        'dense_layer': 138,
+        'learning_rate': 0.01
     }
 }
 
