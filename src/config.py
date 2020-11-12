@@ -1,4 +1,3 @@
-
 # Config file
 experiments = True
 load_model = False
@@ -13,7 +12,7 @@ loss = 'mse'
 epochs = 100
 batch_size = 32
 date_time_key = 'date'
-sequence_length = 1
+sequence_length = 7
 features = [
     'Air Pressure',
     'Water vapor pressure',
@@ -46,7 +45,7 @@ models = {
     'simple_rnn': {
         'hidden_layer': 234,
         'dense_layer': 138,
-        'learning_rate': 0.01
+        'learning_rate': 0.001
     }
 }
 

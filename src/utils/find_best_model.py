@@ -9,6 +9,7 @@ def best_score(x):
 def find_best_model():
     file_list = os.listdir('../../experiments')
     file_list.remove("experiment_results.txt")
-    print("Best model is: ", sorted(file_list, key=best_score)[0])
+    sorted_list = sorted(file_list, key=best_score)
+    print("Best model is: ", sorted_list[0])
 
 find_best_model()
