@@ -36,7 +36,7 @@ def tune_model(model_builder):
 Optimal learning rate for the optimizer is {best_hps.get('learning_rate')}.
 Optimal hidden units: {best_hps.get('units')} 
 Dense units: {best_hps.get('dense_units')} \n"""
-)
+                )
 
 
 class ClearTrainingOutput(tf.keras.callbacks.Callback):
