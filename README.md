@@ -9,7 +9,7 @@ This repository contains Keras models for weather prediction.
 
 
 ## Structure
-The structure of the project. All the python code is in the src folder.
+The structure of the project. All the machine learning code is in the src folder.
 ```
 ├── data            # The data of the project
 ├── experiments     # Experiments
@@ -28,9 +28,10 @@ The structure of the project. All the python code is in the src folder.
 └── README.md
 ```
 
+The data directory contains the datasets used for this project. It contains the raw data, processed data, and data split into train, validation, and test sets. The experiments directory contains the results for each trained model after running the experiments. The plot directory contains vizualizations of the features in the dataset, as well as a heatmap showing the correleation between the feaetures. 
+
 ## Installation
-To install the repository, and run the experiments discussed in the paper,
-run 
+To install the repository, run 
 ```
 $ git clone https://github.com/kamidtli/tdt4173-machine-learning.git
 ```
@@ -48,8 +49,7 @@ $  conda create --name <env> --file requirements_conda.txt
 ```
 
 ## Usage 
-To reproduce the experimental result, run
-the experiments using
+To reproduce the experimental result, run the experiments using
 
 ```
 $ python main.py
