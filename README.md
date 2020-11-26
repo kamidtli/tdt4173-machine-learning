@@ -1,6 +1,6 @@
 # TDT4173-machine-learning
 
-This repository contains Keras models for weather prediction. 
+This repository contains the machine learning code for a time-series forecasting problem proposed for the course TDT4173 Machine Learning, at NTNU in Trondheim.
 
 ## Table of Contents
 - [Structure](#structure)
@@ -28,7 +28,7 @@ The structure of the project. All the machine learning code is in the src folder
 └── README.md
 ```
 
-The data directory contains the datasets used for this project. It contains the raw data, processed data, and data split into train, validation, and test sets. The experiments directory contains the results for each trained model after running the experiments. The plot directory contains vizualizations of the features in the dataset, as well as a heatmap showing the correleation between the feaetures. 
+The data directory contains the datasets used for this project collected from [The Norwegian Centre for Climate Services (NCCS)](https://klimaservicesenter.no/). It contains the raw data, processed data, and data split into train, validation, and test sets. The experiments directory contains the results for each trained model after running the experiments. The plot directory contains vizualizations of the features in the dataset, as well as a heatmap showing the correleation between the feaetures. 
 
 ## Installation
 To install the repository, run 
