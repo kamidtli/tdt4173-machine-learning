@@ -12,7 +12,7 @@ from models.simple_rnn import simple_rnn_model2
 from train import run_experiments, train_model
 from utils.csv_utils import read_csv
 from data.processor import load_data
-from utils.plotting import plot_predictions
+from utils.plotting import plot_multiple_models, plot_predictions
 
 register_matplotlib_converters()
 
@@ -26,11 +26,14 @@ def main():
     model_name = config.model_name
     load_model = config.load_model
     experiments = config.experiments
+    train_single_model = config.train_single_model
+    model_metadata = config.models_to_plot
+    plot_best_models = config.plot_best_models
 
     if experiments:
         run_experiments()
 
-    else:
+    if train_single_model:
         train_data, train_dataset, val_data, val_dataset, test_data, test_dataset = load_data(config.features,
                                                                                               config.sequence_length)
 
@@ -64,8 +67,18 @@ def main():
             print("test loss, test acc:", results)
             visualize_loss(history, "Training and Validation loss", save_dir=save_dir)
 
-        if config.plot_all_predictions:
-            plot_predictions(test_data, test_dataset, trained_model, config.sequence_length)
+        plot_predictions(test_data, test_dataset, trained_model, config.sequence_length)
+
+    if plot_best_models:
+        model_data = []
+        for item in model_metadata:
+            print(item['type'])
+            path = "../experiments/{}-sequence-length-{}-features-{}/{}.h5".format(item['type'], item['sequence_length'], item['features'], item['type'])
+            model = tf.keras.models.load_model(path)
+            test_data, test_dataset = load_data(config.experiment_features.get(str(item['features'])), item['sequence_length'])[4:6]
+            model_data.append({'model': model, 'test_data': test_data, 'test_dataset': test_dataset, 'sequence_length': item['sequence_length'], 'features': item['features'], 'type': item['type']})
+
+        plot_multiple_models(model_data)
 
 
 if __name__ == "__main__":
