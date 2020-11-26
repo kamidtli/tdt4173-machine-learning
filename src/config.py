@@ -1,31 +1,13 @@
 # Config file
-experiments = True
-load_model = False
-plot_all_predictions = True
-model_name = 'lstm_model'
 
-""" The sizes of the hidden layers """
-hidden_layer = 138
-dense_layer = 138
-learning_rate = 0.001
-loss = 'mse'
-epochs = 100
-batch_size = 32
-date_time_key = 'date'
-sequence_length = 7
-features = [
-    'Air Pressure',
-    'Water vapor pressure',
-    'Relative air humidity',
-    'Specific air humidity',
-    # 'Average cloud cover',
-    'Temperature',
-    'Wind speed',
-    'Downfall',
-    # 'Cloudy weather',
-]
+# Program flow specification
+experiments = True
+train_single_model = False
+plot_best_models = False
 
 # Experiments configuration
+epochs = 2
+plot_all_predictions = True
 models = {
     'gru': {
         'hidden_layer': 234,
@@ -78,3 +60,45 @@ experiment_features = {
         'Cloudy weather',
     ]
 }
+
+# Single model training configuration
+load_model = False
+model_name = 'lstm'
+""" The sizes of the hidden layers """
+hidden_layer = 138
+dense_layer = 138
+learning_rate = 0.001
+loss = 'mse'
+batch_size = 32
+date_time_key = 'date'
+sequence_length = 7
+features = [
+    'Air Pressure',
+    'Water vapor pressure',
+    'Relative air humidity',
+    'Specific air humidity',
+    # 'Average cloud cover',
+    'Temperature',
+    'Wind speed',
+    'Downfall',
+    # 'Cloudy weather',
+]
+
+# Which models to plot
+models_to_plot = [
+    {
+        'type': 'gru',
+                'sequence_length': 1,
+                'features': 7
+    },
+    {
+        'type': 'lstm',
+                'sequence_length': 3,
+                'features': 9
+    },
+    {
+        'type': 'fully_connected',
+                'sequence_length': 3,
+                'features': 7
+    }
+]
