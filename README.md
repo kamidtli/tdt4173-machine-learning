@@ -37,15 +37,18 @@ $ git clone https://github.com/kamidtli/tdt4173-machine-learning.git
 ```
 
 ### Requirements
+- Python == 3.6.*
 - TensorFlow >= 2.31
 
 To install the requirements, run
 ```
+$ cd src
 $ pip install -r requirements.txt
 ```
 or if using Anaconda, run
 ```
-$  conda create --name <env> --file requirements_conda.txt
+$ cd src
+$ conda create --name <env> --file requirements_conda.txt
 ```
 
 ## Usage 
