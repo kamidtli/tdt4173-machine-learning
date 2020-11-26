@@ -6,7 +6,7 @@ train_single_model = False
 plot_best_models = False
 
 # Experiments configuration
-epochs = 2
+epochs = 100
 plot_all_predictions = True
 models = {
     'gru': {
